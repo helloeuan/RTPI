@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Leaflet GeoJSON Example with Popup</title>
+    <title>Leaflet GeoJSON Example with Popup and Line Thickness</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <style>
         .leaflet-popup-content {
@@ -38,6 +38,12 @@
                 })
                 .then(function(data) {
                     var geojsonLayer = L.geoJSON(data, {
+                        style: function(feature) {
+                            return {
+                                weight: 2, // Set the thickness of the lines to 2 pixels
+                                color: 'black' // Set the color of the lines
+                            };
+                        },
                         onEachFeature: function(feature, layer) {
                             // Bind a popup with feature attributes to each layer
                             var popupContent = "";
