@@ -3,6 +3,12 @@
 <head>
     <title>Leaflet GeoJSON Example with Popup</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        .leaflet-popup-content {
+            width: 300px;
+            height: 200px;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
 </head>
 <body>
@@ -16,26 +22,44 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Load the GeoJSON data from GitHub and add it as a layer to the map
-        fetch('https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson')
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                L.geoJSON(data, {
-                    onEachFeature: function(feature, layer) {
-                        // Bind a popup with feature attributes to each layer
-                        var popupContent = "";
-                        for (var key in feature.properties) {
-                            popupContent += key + ": " + feature.properties[key] + "<br>";
+        // Array to store the GeoJSON layers
+        var geojsonLayers = [];
+
+        // Load all GeoJSON files from GitHub and add them as layers to the map
+        var geojsonUrls = [
+            'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson',
+            // Add more GeoJSON URLs from the repository here
+        ];
+
+        geojsonUrls.forEach(function(url) {
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var geojsonLayer = L.geoJSON(data, {
+                        onEachFeature: function(feature, layer) {
+                            // Bind a popup with feature attributes to each layer
+                            var popupContent = "";
+                            for (var key in feature.properties) {
+                                popupContent += key + ": " + feature.properties[key] + "<br>";
+                            }
+                            layer.bindPopup(popupContent);
                         }
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-            })
-            .catch(function(error) {
-                console.error('Failed to load GeoJSON data:', error);
-            });
+                    }).addTo(map);
+                    geojsonLayers.push(geojsonLayer);
+                })
+                .catch(function(error) {
+                    console.error('Failed to load GeoJSON data:', error);
+                });
+        });
+
+        // Add a layer control to the map to toggle the visibility of the GeoJSON layers
+        L.control.layers(null, null, {collapsed: false}).addTo(map);
+        geojsonLayers.forEach(function(geojsonLayer) {
+            geojsonLayer.addTo(map);
+            L.control.layers(null, { 'GeoJSON Layer': geojsonLayer }).addTo(map);
+        });
     </script>
 </body>
 </html>
