@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GeoJSON Visualization</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+  <script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13); // Set the initial map view coordinates
+
+    // Add the tile layer (e.g., OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Load and add GeoJSON data from external URLs
+    var geojsonUrl1 = 'https://example.com/geojson1.geojson'; // Replace with your GeoJSON file URL
+    var geojsonUrl2 = 'https://example.com/geojson2.geojson'; // Replace with your GeoJSON file URL
+
+    // Function to handle loading and adding GeoJSON data to the map
+    function addGeoJSONToMap(url, color, width) {
+      fetch(url)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (geojson) {
+          L.geoJSON(geojson, {
+            color: color,
+            weight: width,
+            onEachFeature: function (feature, layer) {
+              // Define click event handler for each feature
+              layer.on('click', function (e) {
+                // Display popup information
+                L.popup()
+                  .setLatLng(e.latlng)
+                  .setContent('Attributes: ' + JSON.stringify(feature.properties)) // Replace with your attribute information
+                  .openOn(map);
+              });
+            }
+          }).addTo(map);
+        })
+        .catch(function (error) {
+          console.error('Failed to load GeoJSON:', error);
+        });
+    }
+
+    // Call the function with the appropriate arguments for each GeoJSON file
+    addGeoJSONToMap(geojsonUrl1, 'red', 2); // Replace with your desired color and width
+    addGeoJSONToMap(geojsonUrl2, 'blue', 1); // Replace with your desired color and width
+  </script>
+</body>
+</html>
