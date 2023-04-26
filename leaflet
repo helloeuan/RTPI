@@ -1,39 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Leaflet GeoJSON Example</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-  <style>
-    #map {
-      height: 400px;
-    }
-  </style>
+    <title>Leaflet GeoJSON Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
 </head>
 <body>
-  <div id="map"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-  <script>
-    // Create a Leaflet map instance
-    var map = L.map('map').setView([0, 0], 2); // Center at [0, 0] and zoom level 2
+    <div id="map" style="height: 100vh;"></div>
+    <script>
+        // Create a Leaflet map centered at a specific location and zoom level
+        var map = L.map('map').setView([53.349805, -6.26031], 13);
+        
+        // Add a tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    // Add a tile layer to the map (e.g., OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Load GeoJSON data from a live URL
-    var geojsonUrl = 'https://example.com/your_live_geojson_url.geojson'; // Replace with your actual live GeoJSON URL
-    fetch(geojsonUrl)
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(geojsonData) {
-        // Create a Leaflet GeoJSON layer and add it to the map
-        L.geoJSON(geojsonData).addTo(map);
-      })
-      .catch(function(error) {
-        console.error('Failed to load GeoJSON:', error);
-      });
-  </script>
+        // Load the GeoJSON data from GitHub and add it as a layer to the map
+        fetch('https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                L.geoJSON(data).addTo(map);
+            })
+            .catch(function(error) {
+                console.error('Failed to load GeoJSON data:', error);
+            });
+    </script>
 </body>
 </html>
