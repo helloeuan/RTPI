@@ -3,7 +3,7 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {"name":"Example rtpi"},
       "geometry": {
         "coordinates": [
           [
