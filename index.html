@@ -8,13 +8,29 @@
             width: 300px;
             height: 200px;
         }
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
 </head>
 <body>
     <div id="map" style="height: 100vh;"></div>
+    <div id="loading-indicator">Loading GeoJSON data...</div>
     <script>
+        // Show loading indicator
+        var loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
+
         // Create a Leaflet map centered at Central London, UK and zoomed in
         var map = L.map('map').setView([51.5074, -0.1278], 13);
         
@@ -32,7 +48,6 @@
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson',
-
             // Add more GeoJSON URLs from the repository here
         ];
 
@@ -42,6 +57,9 @@
                     return response.json();
                 })
                 .then(function(data) {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+
                     var geojsonLayer = L.geoJSON(data, {
                         style: function(feature) {
                             return {
@@ -50,9 +68,6 @@
                             };
                         },
                         onEachFeature: function(feature, layer) {
-                            // Log the feature to inspect its structure
-                            console.log(feature);
-
                             // Calculate area in square meters using Turf.js and log the area
                             var areaInSqMeters = turf.area(feature);
                             console.log("Area in square meters:", areaInSqMeters);
@@ -73,6 +88,8 @@
                     geojsonLayers.push(geojsonLayer);
                 })
                 .catch(function(error) {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
                     console.error('Failed to load GeoJSON data:', error);
                 });
         });
