@@ -50,8 +50,10 @@
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
-                if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-                    const geojsonLayer = L.geoJSON(data, {
+                const geojsonData = data.record || data;  // Adjusted to handle possible nested data
+
+                if (geojsonData && geojsonData.type === 'FeatureCollection' && Array.isArray(geojsonData.features)) {
+                    const geojsonLayer = L.geoJSON(geojsonData, {
                         style: function (feature) {
                             return { weight: 5, color: 'black' };
                         },
@@ -67,7 +69,7 @@
                     }).addTo(map);
                     geojsonLayers.push(geojsonLayer);
                 } else {
-                    console.error('Invalid GeoJSON data:', data);
+                    console.error('Invalid GeoJSON data:', geojsonData);
                 }
             } catch (error) {
                 console.error('Failed to load GeoJSON data:', error);
