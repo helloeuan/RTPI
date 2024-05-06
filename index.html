@@ -20,8 +20,6 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var geojsonLayers = [];
-
         var geojsonUrls = [
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
@@ -42,29 +40,23 @@
                             };
                         },
                         onEachFeature: function(feature, layer) {
-                            if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+                            if (feature.geometry && (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon')) {
                                 var areaInSqMeters = turf.area(feature); // Calculate the area using Turf.js
-                                var areaInHectares = areaInSqMeters / 10000;
+                                var areaInHectares = areaInSqMeters / 10000; // Convert to hectares
                                 var popupContent = "<b>Area:</b> " + areaInHectares.toFixed(2) + " hectares<br>";
                                 for (var key in feature.properties) {
                                     popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
                                 }
                                 layer.bindPopup(popupContent);
                             } else {
-                                console.error('Feature is not a polygon or multipolygon:', feature);
+                                console.log('Non-polygon feature:', feature);
                             }
                         }
                     }).addTo(map);
-                    geojsonLayers.push(geojsonLayer);
                 })
                 .catch(function(error) {
                     console.error('Failed to load GeoJSON data:', error);
                 });
-        });
-
-        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
-        geojsonLayers.forEach(function(geojsonLayer) {
-            layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
         });
     </script>
 </body>
