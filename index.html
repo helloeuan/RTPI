@@ -1,4 +1,33 @@
-<script>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet GeoJSON Example with Popup and Line Thickness</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        .leaflet-popup-content {
+            width: 300px;
+            height: 200px;
+        }
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+</head>
+<body>
+    <div id="map" style="height: 100vh;"></div>
+    <div id="loading-indicator">Loading GeoJSON data...</div>
+    
+    <script>
     document.addEventListener('DOMContentLoaded', async function () {
         var loadingIndicator = document.getElementById('loading-indicator');
         loadingIndicator.style.display = 'block';
