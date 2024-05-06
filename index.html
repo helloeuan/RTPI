@@ -48,9 +48,9 @@
                         onEachFeature: function(feature, layer) {
                             // Calculate area in hectares using Turf.js
                             var areaInSqMeters = turf.area(feature) / 10000; // Convert to hectares
-                            var popupContent = "Area: " + areaInSqMeters.toFixed(2) + " hectares<br>";
+                            var popupContent = "<b>Area:</b> " + areaInSqMeters.toFixed(2) + " hectares<br>";
                             for (var key in feature.properties) {
-                                popupContent += key + ": " + feature.properties[key] + "<br>";
+                                popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
                             }
                             layer.bindPopup(popupContent);
                         }
