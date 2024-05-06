@@ -15,23 +15,17 @@
 <body>
     <div id="map" style="height: 100vh;"></div>
     <script>
-        // Create a Leaflet map centered at Central London, UK and zoomed in
         var map = L.map('map').setView([51.5074, -0.1278], 13);
-        
-        // Add a tile layer from OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Array to store the GeoJSON layers
         var geojsonLayers = [];
 
-        // Load all GeoJSON files from GitHub and add them as layers to the map
         var geojsonUrls = [
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
             'https://pastebin.com/raw/y6hu0axj'
-            // Add more GeoJSON URLs from the repository here
         ];
 
         geojsonUrls.forEach(function(url) {
@@ -43,20 +37,21 @@
                     var geojsonLayer = L.geoJSON(data, {
                         style: function(feature) {
                             return {
-                                weight: 5, // Set the thickness of the lines to 2 pixels
-                                color: 'black' // Set the color of the lines
+                                weight: 5,
+                                color: 'black'
                             };
                         },
                         onEachFeature: function(feature, layer) {
-                            // Ensure that the feature geometry is a polygon to calculate area correctly
-                            if (feature.geometry && feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-                                var areaInSqMeters = turf.area(feature); // Calculate area in square meters
-                                var areaInHectares = areaInSqMeters / 10000; // Convert to hectares
+                            if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+                                var areaInSqMeters = turf.area(feature); // Calculate the area using Turf.js
+                                var areaInHectares = areaInSqMeters / 10000;
                                 var popupContent = "<b>Area:</b> " + areaInHectares.toFixed(2) + " hectares<br>";
                                 for (var key in feature.properties) {
                                     popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
                                 }
                                 layer.bindPopup(popupContent);
+                            } else {
+                                console.error('Feature is not a polygon or multipolygon:', feature);
                             }
                         }
                     }).addTo(map);
@@ -67,7 +62,6 @@
                 });
         });
 
-        // Add a layer control to the map to toggle the visibility of the GeoJSON layers
         var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
         geojsonLayers.forEach(function(geojsonLayer) {
             layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
