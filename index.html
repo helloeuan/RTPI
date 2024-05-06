@@ -38,15 +38,14 @@
 
         var geojsonLayers = [];
         var geojsonUrls = [
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example6.geojson',
-            'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695',
-            'https://api.jsonbin.io/v3/qs/663902abe41b4d34e4efaf54',
+            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson', name: 'example3.geojson'},
+            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson', name: 'example4.geojson'},
+            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson', name: 'example5.geojson'},
+            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example6.geojson', name: 'example6.geojson'},
+            {url: 'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695', name: 'Custom GeoJSON from API'}
         ];
 
-        for (let url of geojsonUrls) {
+        for (let {url, name} of geojsonUrls) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -68,7 +67,7 @@
                             layer.bindPopup(popupContent);
                         }
                     }).addTo(map);
-                    geojsonLayers.push(geojsonLayer);
+                    geojsonLayers.push({layer: geojsonLayer, name: name});
                 } else {
                     console.error('Invalid GeoJSON data:', geojsonData);
                 }
@@ -80,7 +79,7 @@
         loadingIndicator.style.display = 'none';
         var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
         geojsonLayers.forEach(function(geojsonLayer) {
-            layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
+            layerControl.addOverlay(geojsonLayer.layer, geojsonLayer.name);
         });
     });
 </script>
