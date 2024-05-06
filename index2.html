@@ -1,87 +1,74 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Leaflet GeoJSON Example with Popup and Line Thickness</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-    <style>
-        .leaflet-popup-content {
-            width: 300px;
-            height: 200px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
-</head>
-<body>
-    <div id="map" style="height: 100vh;"></div>
-    <script>
-        // Create a Leaflet map centered at Central London, UK and zoomed in
-        var map = L.map('map').setView([51.5074, -0.1278], 13);
-        
-        // Add a tile layer from OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+<script>
+    // Show loading indicator
+    var loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.style.display = 'block';
 
-        // Array to store the GeoJSON layers
-        var geojsonLayers = [];
+    // Create a Leaflet map centered at Central London, UK and zoomed in
+    var map = L.map('map').setView([51.5074, -0.1278], 13);
+    
+    // Add a tile layer from OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Load all GeoJSON files from GitHub and add them as layers to the map
-        var geojsonUrls = [
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson',
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson',
+    // Array to store the GeoJSON layers
+    var geojsonLayers = [];
 
-            // Add more GeoJSON URLs from the repository here
-        ];
+    // URLs to load GeoJSON files
+    var geojsonUrls = [
+        'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
+        'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson',
+        'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson',
+        'https://raw.githubusercontent.com/helloeuan/RTPI/main/example6.geojson',
+        'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695',
+        // Add more GeoJSON URLs from the repository here
+    ];
 
-        geojsonUrls.forEach(function(url) {
-            fetch(url)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    var geojsonLayer = L.geoJSON(data, {
-                        style: function(feature) {
-                            return {
-                                weight: 5, // Set the thickness of the lines to 2 pixels
-                                color: 'black' // Set the color of the lines
-                            };
-                        },
-                        onEachFeature: function(feature, layer) {
-                            // Log the feature to inspect its structure
-                            console.log(feature);
+    geojsonUrls.forEach(function(url) {
+        fetch(url)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                loadingIndicator.style.display = 'none';
 
-                            // Calculate area in square meters using Turf.js and log the area
-                            var areaInSqMeters = turf.area(feature);
-                            console.log("Area in square meters:", areaInSqMeters);
+                var geojsonLayer = L.geoJSON(data, {
+                    style: function(feature) {
+                        return {
+                            weight: 5,
+                            color: 'black'
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        var areaInSqMeters = turf.area(feature);
+                        console.log("Area in square meters:", areaInSqMeters);
 
-                            if (areaInSqMeters > 0) {
-                                var areaInHectares = areaInSqMeters / 10000; // Convert to hectares
-                                var popupContent = "<b>Area:</b> " + areaInHectares.toFixed(2) + " hectares<br>";
-                            } else {
-                                var popupContent = "<b>Area:</b> " + areaInSqMeters.toFixed(2) + " square meters<br>";
-                            }
+                        var popupContent = (areaInSqMeters > 0) ? 
+                            `<b>Area:</b> ${(areaInSqMeters / 10000).toFixed(2)} hectares<br>` :
+                            `<b>Area:</b> ${areaInSqMeters.toFixed(2)} square meters<br>`;
 
-                            for (var key in feature.properties) {
-                                popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
-                            }
-                            layer.bindPopup(popupContent);
-                        }
-                    }).addTo(map);
-                    geojsonLayers.push(geojsonLayer);
-                })
-                .catch(function(error) {
-                    console.error('Failed to load GeoJSON data:', error);
-                });
-        });
+                        Object.keys(feature.properties).forEach(key => {
+                            popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                        });
 
-        // Add a layer control to the map to toggle the visibility of the GeoJSON layers
-        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
-        geojsonLayers.forEach(function(geojsonLayer) {
-            layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
-        });
-    </script>
-</body>
-</html>
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                geojsonLayers.push(geojsonLayer);
+            })
+            .catch(function(error) {
+                loadingIndicator.style.display = 'none';
+                console.error('Failed to load GeoJSON data:', error);
+                alert('Error loading GeoJSON: ' + error.message);
+            });
+    });
+
+    // Add a layer control to the map to toggle the visibility of the GeoJSON layers
+    var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
+    geojsonLayers.forEach(function(geojsonLayer) {
+        layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
+    });
+</script>
