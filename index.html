@@ -8,15 +8,19 @@
             width: 300px;
             height: 200px;
         }
-        #loading-indicator {
+        #loading-indicator, #geojson-input-container {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 10px;
+            left: 10px;
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 5px;
             z-index: 1000;
+        }
+        #loading-indicator {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: none;
         }
     </style>
@@ -26,28 +30,26 @@
 <body>
     <div id="map" style="height: 100vh;"></div>
     <div id="loading-indicator">Loading GeoJSON data...</div>
+    <div id="geojson-input-container">
+        <input type="text" id="geojson-url-input" placeholder="Enter GeoJSON URL" style="width: 300px;">
+        <button onclick="addGeoJSONLayer()">Add Layer</button>
+    </div>
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
-        var loadingIndicator = document.getElementById('loading-indicator');
-        loadingIndicator.style.display = 'block';
-
         var map = L.map('map').setView([51.5074, -0.1278], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         var geojsonLayers = [];
-        var geojsonUrls = [
-            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson', name: 'Layer 1'},
-            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson', name: 'Layer 2'},
-            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson', name: 'Layer 3'},
-            {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example6.geojson', name: 'Layer 4'},
-            {url: 'https://api.jsonbin.io/v3/qs/66390a8cad19ca34f8656422', name: 'Layer 6'},
-            {url: 'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695', name: 'Layer 5'},
-        ];
+        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
-        for (let {url, name} of geojsonUrls) {
+        async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value) {
+            if (!url) return alert('Please enter a URL');
             try {
+                var loadingIndicator = document.getElementById('loading-indicator');
+                loadingIndicator.style.display = 'block';
+
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
@@ -68,20 +70,17 @@
                             layer.bindPopup(popupContent);
                         }
                     }).addTo(map);
-                    geojsonLayers.push({layer: geojsonLayer, name: name});
+                    geojsonLayers.push({layer: geojsonLayer, name: url});
+                    layerControl.addOverlay(geojsonLayer, url);
                 } else {
                     console.error('Invalid GeoJSON data:', geojsonData);
                 }
             } catch (error) {
                 console.error('Failed to load GeoJSON data:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
             }
         }
-
-        loadingIndicator.style.display = 'none';
-        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
-        geojsonLayers.forEach(function(geojsonLayer) {
-            layerControl.addOverlay(geojsonLayer.layer, geojsonLayer.name);
-        });
     });
 </script>
 </body>
