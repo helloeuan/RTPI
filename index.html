@@ -10,6 +10,7 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
 </head>
 <body>
     <div id="map" style="height: 100vh;"></div>
@@ -45,8 +46,9 @@
                             };
                         },
                         onEachFeature: function(feature, layer) {
-                            // Bind a popup with feature attributes to each layer
-                            var popupContent = "";
+                            // Calculate area in hectares using Turf.js
+                            var areaInSqMeters = turf.area(feature) / 10000; // Convert to hectares
+                            var popupContent = "Area: " + areaInSqMeters.toFixed(2) + " hectares<br>";
                             for (var key in feature.properties) {
                                 popupContent += key + ": " + feature.properties[key] + "<br>";
                             }
