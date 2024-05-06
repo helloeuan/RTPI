@@ -23,7 +23,7 @@
 <body>
   <div id="drop-area" class="hover">
     <p>Drag & drop files here</p>
-    <input type="file" id="fileElem" multiple accept=".txt,.md">
+    <input type="file" id="fileElem" multiple accept=".txt,.md,.geojson">
   </div>
 
   <script>
@@ -78,7 +78,7 @@
   const response = await fetch('https://api.github.com/gists', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer YOUR_GITHUB_ACCESS_TOKEN`, // Replace with your GitHub access token
+      'Authorization': `Bearer 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`, // Replace with your GitHub access token
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
