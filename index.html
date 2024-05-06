@@ -28,7 +28,9 @@
 
         // Load all GeoJSON files from GitHub and add them as layers to the map
         var geojsonUrls = [
-            'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson','https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson','https://pastebin.com/raw/y6hu0axj',
+            'https://raw.githubusercontent.com/helloeuan/RTPI/main/rtpitest.geojson',
+            'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson',
+            'https://pastebin.com/raw/y6hu0axj'
             // Add more GeoJSON URLs from the repository here
         ];
 
@@ -46,13 +48,16 @@
                             };
                         },
                         onEachFeature: function(feature, layer) {
-                            // Calculate area in hectares using Turf.js
-                            var areaInSqMeters = turf.area(feature) / 10000; // Convert to hectares
-                            var popupContent = "<b>Area:</b> " + areaInSqMeters.toFixed(2) + " hectares<br>";
-                            for (var key in feature.properties) {
-                                popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
+                            // Ensure that the feature geometry is a polygon to calculate area correctly
+                            if (feature.geometry && feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+                                var areaInSqMeters = turf.area(feature); // Calculate area in square meters
+                                var areaInHectares = areaInSqMeters / 10000; // Convert to hectares
+                                var popupContent = "<b>Area:</b> " + areaInHectares.toFixed(2) + " hectares<br>";
+                                for (var key in feature.properties) {
+                                    popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
+                                }
+                                layer.bindPopup(popupContent);
                             }
-                            layer.bindPopup(popupContent);
                         }
                     }).addTo(map);
                     geojsonLayers.push(geojsonLayer);
@@ -63,10 +68,9 @@
         });
 
         // Add a layer control to the map to toggle the visibility of the GeoJSON layers
-        L.control.layers(null, null, {collapsed: false}).addTo(map);
+        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
         geojsonLayers.forEach(function(geojsonLayer) {
-            geojsonLayer.addTo(map);
-            L.control.layers(null, { 'GeoJSON Layer': geojsonLayer }).addTo(map);
+            layerControl.addOverlay(geojsonLayer, 'GeoJSON Layer');
         });
     </script>
 </body>
