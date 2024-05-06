@@ -42,16 +42,11 @@
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example5.geojson',
             'https://raw.githubusercontent.com/helloeuan/RTPI/main/example6.geojson',
-            'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695',  // Requires API Key
+            'https://api.jsonbin.io/v3/qs/6638da86acd3cb34a843c695',  // Example of an open API
         ];
 
         geojsonUrls.forEach(function(url) {
-            fetch(url, {
-                headers: {
-                    'secret-key': url.includes('jsonbin.io') ? 'your-api-key' : undefined,
-                    'Accept': 'application/json'
-                }
-            })
+            fetch(url)
             .then(function(response) {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
