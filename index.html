@@ -81,4 +81,26 @@
                         },
                         onEachFeature: function (feature, layer) {
                             var areaInSqMeters = turf.area(feature);
-                            var areaInfo = areaInSqMeters > 0 ? (areaInSqMeters / 10000).toFixed(2) + ' hectares' : areaInSqMeters.toFixed(2
+                            var areaInfo = areaInSqMeters > 0 ? (areaInSqMeters / 10000).toFixed(2) + ' hectares' : areaInSqMeters.toFixed(2) + ' square meters';
+                            var popupContent = `<b>Area:</b> ${areaInfo}<br>`;
+                            Object.keys(feature.properties).forEach(key => {
+                                popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                            });
+                            layer.bindPopup(popupContent);
+                        }
+                    }).addTo(map);
+                    geojsonLayers.push({layer: geojsonLayer, name: name});
+                    layerControl.addOverlay(geojsonLayer, name);
+                } else {
+                    console.error('Invalid GeoJSON data:', geojsonData);
+                }
+            } catch (error) {
+                console.error('Failed to load GeoJSON data:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>
