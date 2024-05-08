@@ -39,11 +39,11 @@
 
     document.addEventListener('DOMContentLoaded', async function () {
         map = L.map('map').setView([51.5074, -0.1278], 13);
-        var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var layerControl = L.control.layers({ "Base Layer": baseLayer }, null, {collapsed: false}).addTo(map);
+        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
         const predefinedGeoJSONUrls = [
             {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson', name: 'Layer 1'},
