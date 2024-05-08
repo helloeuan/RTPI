@@ -86,7 +86,7 @@
                         layer.bindPopup(popupContent);
                     }
                 }).addTo(map);
-                layerControl.addOverlay(geojsonLayer, name);
+                layerControl.addOverlay(geojsonLayer, name);  // Ensure the layer is added to the control
             } else {
                 console.error('Invalid GeoJSON data:', geojsonData);
             }
