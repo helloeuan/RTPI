@@ -35,8 +35,10 @@
         <button onclick="addGeoJSONLayer()">Add Layer</button>
     </div>
 <script>
+    var map;  // Make map globally available
+
     document.addEventListener('DOMContentLoaded', async function () {
-        var map = L.map('map').setView([51.5074, -0.1278], 13);
+        map = L.map('map').setView([51.5074, -0.1278], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
@@ -59,58 +61,59 @@
                 await addGeoJSONLayer(url, name);
             }
         }
-
-        async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value, name = url) {
-            if (!url) return alert('Please enter a URL');
-            try {
-                var loadingIndicator = document.getElementById('loading-indicator');
-                loadingIndicator.style.display = 'block';
-
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                const data = await response.json();
-                const geojsonData = findGeoJSON(data);  // Use the generalized finder function
-
-                if (geojsonData && geojsonData.type === 'FeatureCollection' && Array.isArray(geojsonData.features)) {
-                    const geojsonLayer = L.geoJSON(geojsonData, {
-                        style: function (feature) {
-                            return { weight: 5, color: 'black' };
-                        },
-                        onEachFeature: function (feature, layer) {
-                            var areaInSqMeters = turf.area(feature);
-                            var areaInfo = areaInSqMeters > 0 ? (areaInSqMeters / 10000).toFixed(2) + ' hectares' : areaInSqMeters.toFixed(2) + ' square meters';
-                            var popupContent = `<b>Area:</b> ${areaInfo}<br>`;
-                            Object.keys(feature.properties).forEach(key => {
-                                popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
-                            });
-                            layer.bindPopup(popupContent);
-                        }
-                    }).addTo(map);
-                    geojsonLayers.push({layer: geojsonLayer, name: name});
-                    layerControl.addOverlay(geojsonLayer, name);
-                } else {
-                    console.error('Invalid GeoJSON data:', geojsonData);
-                }
-            } catch (error) {
-                console.error('Failed to load GeoJSON data:', error);
-            } finally {
-                loadingIndicator.style.display = 'none';
-            }
-        }
-
-        function findGeoJSON(data) {
-            if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-                return data;
-            }
-            for (let key in data) {
-                if (data[key] && typeof data[key] === 'object') {
-                    let result = findGeoJSON(data[key]);
-                    if (result) return result;
-                }
-            }
-            return null; // Return null if no GeoJSON is found
-        }
     });
+
+    // Define addGeoJSONLayer globally
+    async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value, name = url) {
+        if (!url) return alert('Please enter a URL');
+        try {
+            var loadingIndicator = document.getElementById('loading-indicator');
+            loadingIndicator.style.display = 'block';
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            const geojsonData = findGeoJSON(data);
+
+            if (geojsonData && geojsonData.type === 'FeatureCollection' && Array.isArray(geojsonData.features)) {
+                const geojsonLayer = L.geoJSON(geojsonData, {
+                    style: function (feature) {
+                        return { weight: 5, color: 'black' };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var areaInSqMeters = turf.area(feature);
+                        var areaInfo = areaInSqMeters > 0 ? (areaInSqMeters / 10000).toFixed(2) + ' hectares' : areaInSqMeters.toFixed(2) + ' square meters';
+                        var popupContent = `<b>Area:</b> ${areaInfo}<br>`;
+                        Object.keys(feature.properties).forEach(key => {
+                            popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                        });
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                geojsonLayers.push({layer: geojsonLayer, name: name});
+                layerControl.addOverlay(geojsonLayer, name);
+            } else {
+                console.error('Invalid GeoJSON data:', geojsonData);
+            }
+        } catch (error) {
+            console.error('Failed to load GeoJSON data:', error);
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    function findGeoJSON(data) {
+        if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+            return data;
+        }
+        for (let key in data) {
+            if (data[key] && typeof data[key] === 'object') {
+                let result = findGeoJSON(data[key]);
+                if (result) return result;
+            }
+        }
+        return null; // Return null if no GeoJSON is found
+    }
 </script>
 </body>
 </html>
