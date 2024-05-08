@@ -62,7 +62,6 @@
             }
         }
 
-        // Function to add individual GeoJSON Layers
         async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value, name = url) {
             if (!url) return alert('Please enter a URL');
             try {
@@ -72,7 +71,7 @@
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
-                const geojsonData = data.record || data;  // Adjusted to handle possible nested data
+                const geojsonData = findGeoJSON(data);  // Use the generalized finder function
 
                 if (geojsonData && geojsonData.type === 'FeatureCollection' && Array.isArray(geojsonData.features)) {
                     const geojsonLayer = L.geoJSON(geojsonData, {
@@ -99,6 +98,19 @@
             } finally {
                 loadingIndicator.style.display = 'none';
             }
+        }
+
+        function findGeoJSON(data) {
+            if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+                return data;
+            }
+            for (let key in data) {
+                if (data[key] && typeof data[key] === 'object') {
+                    let result = findGeoJSON(data[key]);
+                    if (result) return result;
+                }
+            }
+            return null; // Return null if no GeoJSON is found
         }
     });
 </script>
