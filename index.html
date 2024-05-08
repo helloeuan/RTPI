@@ -43,10 +43,8 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var geojsonLayers = [];
         var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
-        // Predefined GeoJSON Layers Initialization
         const predefinedGeoJSONUrls = [
             {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example3.geojson', name: 'Layer 1'},
             {url: 'https://raw.githubusercontent.com/helloeuan/RTPI/main/example4.geojson', name: 'Layer 2'},
@@ -63,13 +61,11 @@
         }
     });
 
-    // Define addGeoJSONLayer globally
     async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value, name = url) {
         if (!url) return alert('Please enter a URL');
+        var loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
         try {
-            var loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.style.display = 'block';
-
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
@@ -90,7 +86,6 @@
                         layer.bindPopup(popupContent);
                     }
                 }).addTo(map);
-                geojsonLayers.push({layer: geojsonLayer, name: name});
                 layerControl.addOverlay(geojsonLayer, name);
             } else {
                 console.error('Invalid GeoJSON data:', geojsonData);
