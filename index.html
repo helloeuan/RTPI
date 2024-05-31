@@ -8,19 +8,15 @@
             width: 300px;
             height: 200px;
         }
-        #loading-indicator, #geojson-input-container {
+        #loading-indicator {
             position: fixed;
-            top: 10px;
-            left: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 5px;
             z-index: 1000;
-        }
-        #loading-indicator {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             display: none;
         }
     </style>
@@ -30,10 +26,6 @@
 <body>
     <div id="map" style="height: 100vh;"></div>
     <div id="loading-indicator">Loading GeoJSON data...</div>
-    <div id="geojson-input-container">
-        <input type="text" id="geojson-url-input" placeholder="Enter GeoJSON URL" style="width: 300px;">
-        <button onclick="addGeoJSONLayer()">Add Layer</button>
-    </div>
 <script>
     var map;  // Make map globally available
 
@@ -46,8 +38,8 @@
         var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
         const predefinedGeoJSONUrls = [
-            {url: 'https://www.dropbox.com/scl/fi/o5tjhiu9qm7zfrlj3dj4q/localplan1.geojson?rlkey=1x0fwmjf1z7okyodhxe7xw63e&st=48g6rk8z&dl=0', name: 'Layer 1'},
-            {url: 'https://www.dropbox.com/scl/fi/66e0o4hra0i374lpwvenz/localplan2.geojson?rlkey=ehw68hac3hx722hheh36v5nlc&st=w2ckj3v6&dl=0', name: 'Layer 2'},
+            {url: 'https://www.dropbox.com/s/your_shared_file_1.geojson?dl=0', name: 'Layer 1'},
+            {url: 'https://www.dropbox.com/s/your_shared_file_2.geojson?dl=0', name: 'Layer 2'},
             {url: 'https://www.dropbox.com/s/your_shared_file_3.geojson?dl=0', name: 'Layer 3'},
             {url: 'https://www.dropbox.com/s/your_shared_file_4.geojson?dl=0', name: 'Layer 4'},
         ];
@@ -61,8 +53,7 @@
         }
     });
 
-    async function addGeoJSONLayer(url = document.getElementById('geojson-url-input').value, name = url) {
-        if (!url) return alert('Please enter a URL');
+    async function addGeoJSONLayer(url, name) {
         url = convertToDropboxDownloadUrl(url);
         var loadingIndicator = document.getElementById('loading-indicator');
         loadingIndicator.style.display = 'block';
