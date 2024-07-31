@@ -39,22 +39,22 @@
         layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
         const predefinedGeoJSONUrls = [
-            {url: 'https://www.dropbox.com/scl/fi/x9zye9s4vknwlgimic0ah/Student1.geojson?rlkey=4ly7wnl5yv6m9k0m0lxdhkvra&st=musnfjlo&dl=0', name: 'Layer 1'},
-            {url: 'https://www.dropbox.com/scl/fi/20wnv840c1c3s6b60ye5n/Student2.geojson?rlkey=8md68633hwj3qxx6sqpgwx5rh&st=kxv4d042&dl=0', name: 'Layer 2'},
-            {url: 'https://www.dropbox.com/scl/fi/7g7c52pav789botpdhe8c/Student3.geojson?rlkey=oux6h522nxieymhjvtemxqr2g&st=5w65c7g7&dl=0', name: 'Layer 3'},
-            {url: 'https://www.dropbox.com/scl/fi/hzwfo72gdgpvtk81pamvp/Student4.geojson?rlkey=ec5launsq4c4c6k63nnwa695l&st=sqsq7bis&dl=0', name: 'Layer 4'},
-            {url: 'https://www.dropbox.com/scl/fi/cm2cx8873ztyl6x66nkf9/Student5.geojson?rlkey=e7l0dkur30crvr6lxnjln13nj&st=b3huzl3x&dl=0', name: 'Layer 5'},
-            {url: 'https://www.dropbox.com/scl/fi/svdhmox4znx5spfyk8fgv/Student6.geojson?rlkey=cp5gqyyugjczenf9jekky92o1&st=i0bcqdgh&dl=0', name: 'Layer 6'},
-            {url: 'https://www.dropbox.com/scl/fi/1rt9ywbqoqkopd0nbkhe5/Student7.geojson?rlkey=tf5wqlztzx5j1zao0wmbny4lu&st=ihc9stik&dl=0', name: 'Layer 7'},
-            {url: 'https://www.dropbox.com/scl/fi/ihb2a3uu8742ilnot4yur/Student8.geojson?rlkey=sujnln57d4br0f63xh8y4q6z2&st=mwteeipt&dl=0', name: 'Layer 8'},
-            {url: 'https://www.dropbox.com/scl/fi/2ufv2voo5p01l9vpqc2qj/Student9.geojson?rlkey=x2eg2ebzwr3oyq33o7vcp9nv8&st=axg3cg0k&dl=0', name: 'Layer 9'},
-            {url: 'https://www.dropbox.com/scl/fi/l8um29brn4aqyqt9zpgom/Student10.geojson?rlkey=bceec1jd0ue6g0qkp4lnkx2z4&st=wouso7i3&dl=0', name: 'Layer 10'},
-            {url: 'https://www.dropbox.com/scl/fi/dbnquswaxd07a3nokropa/Student11.geojson?rlkey=60qf8my4l85qnwt1unqvjso67&st=j4apolfu&dl=0', name: 'Layer 11'},
-            {url: 'https://www.dropbox.com/scl/fi/dcws98zx44rlukehpo5mm/Student12.geojson?rlkey=7pd631u00q31z30ug28qjr2bw&st=e2fk8l9z&dl=0', name: 'Layer 12'},
-            {url: 'https://www.dropbox.com/scl/fi/n45fh9in5g85jdmiycthk/Student13.geojson?rlkey=ulbr7kzy6utnnxommsfiz3myb&st=9jv172tk&dl=0', name: 'Layer 13'},
-            {url: 'https://www.dropbox.com/scl/fi/ceutwvvz5s4afq7qvg6e7/Student14.geojson?rlkey=xyhw89wfbepvo8wgd0cb4xjgx&st=x04mv775&dl=0', name: 'Layer 14'},
-            {url: 'https://www.dropbox.com/scl/fi/pcgtwyb02srqh0ei8gx9v/Student15.geojson?rlkey=ywqx1023zs3cqk3iz772mrj3a&st=vjqatjeb&dl=0', name: 'Layer 15'},
-            {url: 'https://www.dropbox.com/scl/fi/o74mn6q1gzut78q9fif01/Student16.geojson?rlkey=56ocfw0cx5cfp71g47rzt2iaj&st=uf4oy68m&dl=0', name: 'Layer 16'},
+            {url: 'https://www.dropbox.com/scl/fi/x9zye9s4vknwlgimic0ah/Student1.geojson?rlkey=4ly7wnl5yv6m9k0m0lxdhkvra&st=musnfjlo&dl=0', name: 'Student 1'},
+            {url: 'https://www.dropbox.com/scl/fi/20wnv840c1c3s6b60ye5n/Student2.geojson?rlkey=8md68633hwj3qxx6sqpgwx5rh&st=kxv4d042&dl=0', name: 'Student 2'},
+            {url: 'https://www.dropbox.com/scl/fi/7g7c52pav789botpdhe8c/Student3.geojson?rlkey=oux6h522nxieymhjvtemxqr2g&st=5w65c7g7&dl=0', name: 'Student 3'},
+            {url: 'https://www.dropbox.com/scl/fi/hzwfo72gdgpvtk81pamvp/Student4.geojson?rlkey=ec5launsq4c4c6k63nnwa695l&st=sqsq7bis&dl=0', name: 'Student 4'},
+            {url: 'https://www.dropbox.com/scl/fi/cm2cx8873ztyl6x66nkf9/Student5.geojson?rlkey=e7l0dkur30crvr6lxnjln13nj&st=b3huzl3x&dl=0', name: 'Student 5'},
+            {url: 'https://www.dropbox.com/scl/fi/svdhmox4znx5spfyk8fgv/Student6.geojson?rlkey=cp5gqyyugjczenf9jekky92o1&st=i0bcqdgh&dl=0', name: 'Student 6'},
+            {url: 'https://www.dropbox.com/scl/fi/1rt9ywbqoqkopd0nbkhe5/Student7.geojson?rlkey=tf5wqlztzx5j1zao0wmbny4lu&st=ihc9stik&dl=0', name: 'Student 7'},
+            {url: 'https://www.dropbox.com/scl/fi/ihb2a3uu8742ilnot4yur/Student8.geojson?rlkey=sujnln57d4br0f63xh8y4q6z2&st=mwteeipt&dl=0', name: 'Student 8'},
+            {url: 'https://www.dropbox.com/scl/fi/2ufv2voo5p01l9vpqc2qj/Student9.geojson?rlkey=x2eg2ebzwr3oyq33o7vcp9nv8&st=axg3cg0k&dl=0', name: 'Student 9'},
+            {url: 'https://www.dropbox.com/scl/fi/l8um29brn4aqyqt9zpgom/Student10.geojson?rlkey=bceec1jd0ue6g0qkp4lnkx2z4&st=wouso7i3&dl=0', name: 'Student 10'},
+            {url: 'https://www.dropbox.com/scl/fi/dbnquswaxd07a3nokropa/Student11.geojson?rlkey=60qf8my4l85qnwt1unqvjso67&st=j4apolfu&dl=0', name: 'Student 11'},
+            {url: 'https://www.dropbox.com/scl/fi/dcws98zx44rlukehpo5mm/Student12.geojson?rlkey=7pd631u00q31z30ug28qjr2bw&st=e2fk8l9z&dl=0', name: 'Student 12'},
+            {url: 'https://www.dropbox.com/scl/fi/n45fh9in5g85jdmiycthk/Student13.geojson?rlkey=ulbr7kzy6utnnxommsfiz3myb&st=9jv172tk&dl=0', name: 'Student 13'},
+            {url: 'https://www.dropbox.com/scl/fi/ceutwvvz5s4afq7qvg6e7/Student14.geojson?rlkey=xyhw89wfbepvo8wgd0cb4xjgx&st=x04mv775&dl=0', name: 'Student 14'},
+            {url: 'https://www.dropbox.com/scl/fi/pcgtwyb02srqh0ei8gx9v/Student15.geojson?rlkey=ywqx1023zs3cqk3iz772mrj3a&st=vjqatjeb&dl=0', name: 'Student 15'},
+            {url: 'https://www.dropbox.com/scl/fi/o74mn6q1gzut78q9fif01/Student16.geojson?rlkey=56ocfw0cx5cfp71g47rzt2iaj&st=uf4oy68m&dl=0', name: 'Student 16'},
         ];
 
         await loadPredefinedLayers(predefinedGeoJSONUrls);
