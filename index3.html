@@ -1,112 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload to Gist</title>
-  <style>
-    #drop-area {
-      border: 2px dashed #ccc;
-      border-radius: 5px;
-      padding: 20px;
-      text-align: center;
-      margin: 50px auto;
-      width: 300px;
-      cursor: pointer;
-    }
-
-    #drop-area.hover {
-      border-color: #333;
-    }
-  </style>
+    <title>Leaflet GeoJSON Example with Popup and Line Thickness</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        .leaflet-popup-content {
+            width: 300px;
+            height: 200px;
+        }
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
 </head>
 <body>
-  <div id="drop-area" class="hover">
-    <p>Drag & drop files here</p>
-    <input type="file" id="fileElem" multiple accept=".txt,.md,.geojson">
-  </div>
+    <div id="map" style="height: 100vh;"></div>
+    <div id="loading-indicator">Loading GeoJSON data...</div>
+<script>
+    var map;  // Make map globally available
 
-  <script>
-    const dropArea = document.getElementById('drop-area');
-    const fileInput = document.getElementById('fileElem');
+    document.addEventListener('DOMContentLoaded', async function () {
+        map = L.map('map').setView([51.5074, -0.1278], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, preventDefaults, false);
-    });
+        var layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
 
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+        const predefinedGeoJSONUrls = [
+            {url: 'https://www.dropbox.com/scl/fi/x9zye9s4vknwlgimic0ah/Student1.geojson?rlkey=4ly7wnl5yv6m9k0m0lxdhkvra&st=musnfjlo&dl=0', name: 'Layer 1'},
+            {url: 'https://www.dropbox.com/scl/fi/20wnv840c1c3s6b60ye5n/Student2.geojson?rlkey=8md68633hwj3qxx6sqpgwx5rh&st=kxv4d042&dl=0', name: 'Layer 2'},
+            {url: 'https://www.dropbox.com/scl/fi/7g7c52pav789botpdhe8c/Student3.geojson?rlkey=oux6h522nxieymhjvtemxqr2g&st=5w65c7g7&dl=0', name: 'Layer 3'},
+            {url: 'https://www.dropbox.com/scl/fi/hzwfo72gdgpvtk81pamvp/Student4.geojson?rlkey=ec5launsq4c4c6k63nnwa695l&st=sqsq7bis&dl=0', name: 'Layer 4'},
+            {url: 'https://www.dropbox.com/scl/fi/cm2cx8873ztyl6x66nkf9/Student5.geojson?rlkey=e7l0dkur30crvr6lxnjln13nj&st=b3huzl3x&dl=0', name: 'Layer 5'},
+            {url: 'https://www.dropbox.com/scl/fi/svdhmox4znx5spfyk8fgv/Student6.geojson?rlkey=cp5gqyyugjczenf9jekky92o1&st=i0bcqdgh&dl=0', name: 'Layer 6'},
+            {url: 'https://www.dropbox.com/scl/fi/1rt9ywbqoqkopd0nbkhe5/Student7.geojson?rlkey=tf5wqlztzx5j1zao0wmbny4lu&st=ihc9stik&dl=0', name: 'Layer 7'},
+            {url: 'https://www.dropbox.com/scl/fi/ihb2a3uu8742ilnot4yur/Student8.geojson?rlkey=sujnln57d4br0f63xh8y4q6z2&st=mwteeipt&dl=0', name: 'Layer 8'},
+            {url: 'https://www.dropbox.com/scl/fi/2ufv2voo5p01l9vpqc2qj/Student9.geojson?rlkey=x2eg2ebzwr3oyq33o7vcp9nv8&st=axg3cg0k&dl=0', name: 'Layer 9'},
+            {url: 'https://www.dropbox.com/scl/fi/l8um29brn4aqyqt9zpgom/Student10.geojson?rlkey=bceec1jd0ue6g0qkp4lnkx2z4&st=wouso7i3&dl=0', name: 'Layer 10'},
+            {url: 'https://www.dropbox.com/scl/fi/dbnquswaxd07a3nokropa/Student11.geojson?rlkey=60qf8my4l85qnwt1unqvjso67&st=j4apolfu&dl=0', name: 'Layer 11'},
+            {url: 'https://www.dropbox.com/scl/fi/dcws98zx44rlukehpo5mm/Student12.geojson?rlkey=7pd631u00q31z30ug28qjr2bw&st=e2fk8l9z&dl=0', name: 'Layer 12'},
+              {url: 'https://www.dropbox.com/scl/fi/n45fh9in5g85jdmiycthk/Student13.geojson?rlkey=ulbr7kzy6utnnxommsfiz3myb&st=9jv172tk&dl=0', name: 'Layer 13'},
+              {url: 'https://www.dropbox.com/scl/fi/ceutwvvz5s4afq7qvg6e7/Student14.geojson?rlkey=xyhw89wfbepvo8wgd0cb4xjgx&st=x04mv775&dl=0', name: 'Layer 14'},
+              {url: 'https://www.dropbox.com/scl/fi/pcgtwyb02srqh0ei8gx9v/Student15.geojson?rlkey=ywqx1023zs3cqk3iz772mrj3a&st=vjqatjeb&dl=0', name: 'Layer 15'},
+              {url: 'https://www.dropbox.com/scl/fi/o74mn6q1gzut78q9fif01/Student16.geojson?rlkey=56ocfw0cx5cfp71g47rzt2iaj&st=uf4oy68m&dl=0', name: 'Layer 16'},
+           
+            
+        ];
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropArea.addEventListener(eventName, highlight, false);
-    });
+        await loadPredefinedLayers(predefinedGeoJSONUrls);
 
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight(e) {
-      dropArea.classList.add('hover');
-    }
-
-    function unhighlight(e) {
-      dropArea.classList.remove('hover');
-    }
-
-    dropArea.addEventListener('drop', handleDrop, false);
-
-    async function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-
-      handleFiles(files);
-    }
-
-    async function handleFiles(files) {
-      const file = files[0];
-      const fileReader = new FileReader();
-      
-      fileReader.onload = async function(event) {
-        const fileContent = event.target.result;
-        
-        const formData = new FormData();
-        formData.append('file', file);
-        
-      try {
-  const response = await fetch('https://api.github.com/gists', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer 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`, // Replace with your GitHub access token
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      description: 'Uploaded File',
-      public: true,
-      files: {
-        [file.name]: {
-          content: fileContent
+        async function loadPredefinedLayers(urls) {
+            for (let {url, name} of urls) {
+                await addGeoJSONLayer(url, name);
+            }
         }
-      }
-    })
-  });
+    });
 
-  const data = await response.json();
-  console.log('GitHub API Response:', data); // Log the entire response object
+    async function addGeoJSONLayer(url, name) {
+        url = convertToDropboxDownloadUrl(url);
+        var loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            const geojsonData = findGeoJSON(data);
 
-  const gistUrl = data.html_url; // Extract the URL from the response JSON
-  console.log('Gist URL:', gistUrl); // Log the extracted URL
-
-  alert(`File uploaded successfully! Gist URL: ${gistUrl}`);
-} catch (error) {
-  console.error('Error:', error);
-  alert('An error occurred while uploading the file');
-}
-      };
-
-      fileReader.readAsText(file);
+            if (geojsonData && geojsonData.type === 'FeatureCollection' && Array.isArray(geojsonData.features)) {
+                const geojsonLayer = L.geoJSON(geojsonData, {
+                    style: function (feature) {
+                        return { weight: 5, color: 'black' };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var areaInSqMeters = turf.area(feature);
+                        var areaInfo = areaInSqMeters > 0 ? (areaInSqMeters / 10000).toFixed(2) + ' hectares' : areaInSqMeters.toFixed(2) + ' square meters';
+                        var popupContent = `<b>Area:</b> ${areaInfo}<br>`;
+                        Object.keys(feature.properties).forEach(key => {
+                            popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                        });
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                layerControl.addOverlay(geojsonLayer, name);  // Ensure the layer is added to the control
+            } else {
+                console.error('Invalid GeoJSON data:', geojsonData);
+            }
+        } catch (error) {
+            console.error('Failed to load GeoJSON data:', error);
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
     }
-  </script>
+
+    function findGeoJSON(data) {
+        if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+            return data;
+        }
+        for (let key in data) {
+            if (data[key] && typeof data[key] === 'object') {
+                let result = findGeoJSON(data[key]);
+                if (result) return result;
+            }
+        }
+        return null; // Return null if no GeoJSON is found
+    }
+
+    function convertToDropboxDownloadUrl(url) {
+        return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
+    }
+</script>
 </body>
 </html>
